@@ -14,7 +14,7 @@ int main(int ac, char **av)
 {
     server_t *server = malloc(sizeof(server_t));
     memset(server, 0, sizeof(server_t));
-    const char *usage = "\nUSAGE: ./myftp port path\n"
+    const char *usage = "USAGE: ./myftp port path\n"
         "port is the port number on which the server socket listens\n"
         "path is the path to the home directory for the Anonymous user\n";
 
