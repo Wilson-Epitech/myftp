@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include "include/server.h"
+#include "server.h"
 
 void init_sockstruct(server_t *server)
 {

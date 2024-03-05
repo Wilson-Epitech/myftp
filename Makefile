@@ -13,7 +13,7 @@ OBJ	=	$(SRC:.c=.o)
 
 RM = rm -f
 
-CPPFLAGS += -iquote./includes
+CPPFLAGS += -iquote./include
 
 CFLAGS += -Wall -Wextra -g3
 
