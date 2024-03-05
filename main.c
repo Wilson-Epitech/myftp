@@ -15,6 +15,5 @@ int main(int ac, char **av)
         printf("%s", usage);
         return 0;
     }
-    srv_function();
     return 0;
 }
