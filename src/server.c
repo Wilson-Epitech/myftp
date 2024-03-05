@@ -1,0 +1,53 @@
+/*
+** MYFTP PROJECT, 2024
+** [Conteneur de développement : C @ desktop-linux]
+** File description:
+** server
+*/
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include "server.h"
+
+static void process_socket(server_t *server)
+{
+    if (bind(server->fd, (struct sockaddr*) &server->socket,
+        sizeof(server->socket)) < 0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    if (listen(server->fd, 100) < 0) {
+        perror("listen failed");
+        exit(EXIT_FAILURE);
+    }
+}
+
+static void accept_connection(server_t *server)
+{
+    if ((server->nw_socket = accept(server->fd, (struct sockaddr*)
+        &server->socket, &server->socketlen)) < 0) {
+            perror("accept failed");
+            exit(EXIT_FAILURE);
+    }
+}
+
+int server_loop(server_t *server)
+{
+    server->buffer = malloc(sizeof(char) * 1024);
+    server->socketlen = sizeof(server->socket);
+    server->fd = init_socket(server->fd);
+    init_sockstruct(server);
+    process_socket(server);
+    while (1) {
+        fork();
+        accept_connection(server);
+        read(server->nw_socket, server->buffer, 1024 - 1);
+        puts(server->buffer);
+        send(server->nw_socket, "hello\n", 6, 0);
+        close(server->nw_socket);
+        sleep(10);
+    }
+    close(server->fd);
+    return 0;
+}

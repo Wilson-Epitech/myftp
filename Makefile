@@ -7,7 +7,9 @@
 
 CC ?= gcc
 
-SRC	=	main.c		\
+SRC	=	main.c				\
+		src/init.c			\
+		src/server.c 		\
 
 OBJ	=	$(SRC:.c=.o)
 
