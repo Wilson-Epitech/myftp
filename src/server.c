@@ -32,6 +32,15 @@ static void accept_connection(server_t *server)
     }
 }
 
+static void after_connection(server_t *server)
+{
+    read(server->nw_socket, server->buffer, 1024 - 1);
+    puts(server->buffer);
+    send(server->nw_socket, "hello\n", 6, 0);
+    close(server->nw_socket);
+    sleep(10);
+}
+
 int server_loop(server_t *server)
 {
     server->buffer = malloc(sizeof(char) * 1024);
@@ -42,11 +51,7 @@ int server_loop(server_t *server)
     while (1) {
         fork();
         accept_connection(server);
-        read(server->nw_socket, server->buffer, 1024 - 1);
-        puts(server->buffer);
-        send(server->nw_socket, "hello\n", 6, 0);
-        close(server->nw_socket);
-        sleep(10);
+        after_connection(server);
     }
     close(server->fd);
     return 0;
