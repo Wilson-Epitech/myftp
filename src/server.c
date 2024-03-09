@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include "server.h"
 
 static void process_socket(server_t *server)
@@ -25,10 +28,11 @@ static void process_socket(server_t *server)
 
 static void accept_connection(server_t *server)
 {
-    if ((server->nw_socket = accept(server->fd, (struct sockaddr*)
-        &server->socket, &server->socketlen)) < 0) {
-            perror("accept failed");
-            exit(EXIT_FAILURE);
+    server->nw_socket = accept(server->fd, (struct sockaddr*)
+        &server->socket, &server->socketlen);
+    if (server->nw_socket < 0) {
+        perror("accept failed");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -38,7 +42,7 @@ static void after_connection(server_t *server)
     puts(server->buffer);
     send(server->nw_socket, "hello\n", 6, 0);
     close(server->nw_socket);
-    sleep(10);
+    // sleep(10);
 }
 
 int server_loop(server_t *server)
@@ -49,9 +53,17 @@ int server_loop(server_t *server)
     init_sockstruct(server);
     process_socket(server);
     while (1) {
-        fork();
-        accept_connection(server);
-        after_connection(server);
+        FD_ZERO(&server->readfds);
+        FD_SET(server->fd, &server->readfds);
+        if ((select(server->fd + 1, &server->readfds,
+            NULL, NULL, &server->timeout)) < 0) {
+            perror("select failed");
+            exit(EXIT_FAILURE);
+        }
+        if (FD_ISSET(server->fd, &server->readfds)) {
+            accept_connection(server);
+            after_connection(server);
+        }
     }
     close(server->fd);
     return 0;

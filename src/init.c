@@ -18,9 +18,10 @@ void init_sockstruct(server_t *server)
 
 int init_socket(int fd)
 {
-    if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
-    return fd; 
+    return fd;
 }
