@@ -9,11 +9,18 @@
 #include <stdio.h>
 #include "server.h"
 
-void init_sockstruct(server_t *server)
+void init_sock_struct(server_t *server)
 {
     server->socket.sin_family = AF_INET;
     server->socket.sin_addr.s_addr = INADDR_ANY;
-    server->socket.sin_port = htons(4242);
+    server->socket.sin_port = htons(server->port);
+}
+
+void init_data_struct(server_t *server)
+{
+    server->dataSocket.sin_family = AF_INET;
+    server->dataSocket.sin_addr.s_addr = INADDR_ANY;
+    server->dataSocket.sin_port = htons(4343);
 }
 
 int init_socket(int fd)
