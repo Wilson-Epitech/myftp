@@ -16,6 +16,11 @@
 #include <string.h>
 #include "server.h"
 
+static void get_retr_path(server_t *server)
+{
+    printf("ici buffer retr %s\n", server->buffer);
+}
+
 static void process_socket(server_t *server)
 {
     if (bind(server->fd, (struct sockaddr*) &server->socket,
