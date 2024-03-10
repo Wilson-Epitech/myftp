@@ -22,6 +22,10 @@ int main(int ac, char **av)
         printf("%s", usage);
         return 0;
     }
+    if (ac != 3)
+        return 84;
+    if (get_args(server, av) == 84)
+        return 84;
     server_loop(server);
     return 0;
 }
