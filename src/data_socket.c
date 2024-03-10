@@ -45,3 +45,24 @@ static void create_data_socket(server_t *server)
         exit(EXIT_FAILURE);
     }
 }
+
+void data_socket_loop(server_t *server)
+{
+    create_data_socket(server);
+    reply227(server);
+    close(server->nw_socket);
+    // fork();
+    if (listen(server->fd_data, 100) < 0) {
+        perror("listen failed");
+        exit(EXIT_FAILURE);
+    }
+    server->nw_data_socket = accept(server->fd_data, (struct sockaddr*)
+    &server->dataSocket, &server->socketlen);
+    if (server->nw_data_socket < 0) {
+        perror("accept failed");
+        exit(EXIT_FAILURE);
+    }
+    read(server->nw_data_socket, server->data_buffer, 1024 - 1);
+    puts(server->data_buffer);
+    close(server->nw_data_socket);
+}
