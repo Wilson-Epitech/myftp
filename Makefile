@@ -10,6 +10,8 @@ CC ?= gcc
 SRC	=	main.c				\
 		src/init.c			\
 		src/server.c 		\
+		src/get_args.c		\
+		src/data_socket.c	\
 
 OBJ	=	$(SRC:.c=.o)
 
