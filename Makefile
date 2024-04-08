@@ -7,11 +7,14 @@
 
 CC ?= gcc
 
-SRC	=	main.c				\
-		src/init.c			\
-		src/server.c 		\
-		src/get_args.c		\
-		src/data_socket.c	\
+SRC	=	main.c							\
+		src/init.c						\
+		src/server.c 					\
+		src/get_args.c					\
+		src/get_reply_code.c			\
+		src/socket.c					\
+		src/lib/my_word_array_delim.c 	\
+		# src/data_socket.c	\
 
 OBJ	=	$(SRC:.c=.o)
 

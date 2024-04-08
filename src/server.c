@@ -5,77 +5,113 @@
 ** server
 */
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <string.h>
 #include "server.h"
 
-static void get_retr_path(server_t *server)
+static void get_user_command(server_t *server, char **array, int i)
 {
-    printf("ici buffer retr %s\n", server->buffer);
+    if (strcmp(array[0], "QUIT") == 0) {
+        close(server->sd);
+		server->client_socket[i] = 0;
+    }
+    if ((strcmp(array[0], "USER") == 0))
+        send_reply(server->sd, "331");
+    if ((strcmp(array[0], "USER") == 0)
+        && (strcmp(array[1], "Anonymous") == 0))
+        server->Anonymous_logged = 1;
+    if ((strcmp(array[0], "PASS") == 0)
+        && server->Anonymous_logged == 1 && array[1] != NULL)
+        send_reply(server->sd, "530");
+    if ((strcmp(array[0], "PASS") == 0)
+        && server->Anonymous_logged == 1 && array[1] == NULL)
+        send_reply(server->sd, "230");
 }
 
-static void process_socket(server_t *server)
+static int check_user_command(server_t *server, char *buffer, int i)
 {
-    if (bind(server->fd, (struct sockaddr*) &server->socket,
-        sizeof(server->socket)) < 0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
+    char **commands = NULL;
+    char **array = my_word_array_delim(buffer, " ");
+
+    commands = init_array_commands(commands);
+    if (array[1] == NULL && strcmp(array[0], "QUIT")
+        != 0 && strcmp(array[0], "PASS") != 0) {
+            return 1;
     }
-    if (listen(server->fd, 100) < 0) {
-        perror("listen failed");
-        exit(EXIT_FAILURE);
+    for (int j = 0; commands[j] != NULL; j++) {
+        if (strcmp(array[0], commands[j]) == 0) {
+            get_user_command(server, array, i);
+            return 0;
+        }
     }
+    return 1;
 }
 
-static void accept_connection(server_t *server)
+static void check_state(server_t *server, int i)
 {
-    server->nw_socket = accept(server->fd, (struct sockaddr*)
-        &server->socket, &server->socketlen);
-    if (server->nw_socket < 0) {
-        perror("accept failed");
-        exit(EXIT_FAILURE);
-    }
+    int pos = 0;
+    char *message = get_reply_code("500");
+
+    server->valread = read(server->sd, server->buffer, 4096);
+    if (server->valread == 0) {
+		close(server->sd);
+		server->client_socket[i] = 0;
+	} else {
+	    server->buffer[server->valread - 2] = '\0';
+        pos = check_user_command(server, server->buffer, i);
+        if (pos == 1)
+            send(server->sd, message, strlen(message), 0);
+	}
 }
 
 static void after_connection(server_t *server)
 {
-    read(server->nw_socket, server->buffer, 1024 - 1);
-    if (strstr(server->buffer, "PASV") != NULL) {
-        data_socket_loop(server);
+    for (int i = 0; i < server->max_clients; i++) {
+		server->sd = server->client_socket[i];
+		if (FD_ISSET(server->sd, &server->readfds)) {
+			check_state(server, i);
+		}
+	}
+}
+
+static void accept_connection(server_t *server)
+{
+    char *message = get_reply_code("220");
+
+    server->nw_socket = accept(server->frst_socket,
+	    (struct sockaddr *)&server->socket, (socklen_t *)&server->socketlen);
+    if (server->nw_socket < 0) {
+        perror("accept failed");
+        exit(EXIT_FAILURE);
     }
-    if (strstr(server->buffer, "RETR") != NULL) {
-        get_retr_path(server);
+    if (send(server->nw_socket, message,
+        strlen(message), 0) != strlen(message)) {
+	    perror("send failed");
+        exit(EXIT_FAILURE);
     }
-    puts(server->buffer);
 }
 
 int server_loop(server_t *server)
 {
-    server->buffer = malloc(sizeof(char) * 1024);
-    server->socketlen = sizeof(server->socket);
-    server->fd = init_socket(server->fd);
-    init_sock_struct(server);
+    init_server(server);
     process_socket(server);
     while (1) {
         FD_ZERO(&server->readfds);
-        FD_SET(server->fd, &server->readfds);
-        if ((select(server->fd + 1, &server->readfds,
+        FD_SET(server->frst_socket, &server->readfds);
+        server->max_sd = server->frst_socket;
+        handle_client_socket(server);
+        if ((select(server->max_sd + 1, &server->readfds,
             NULL, NULL, &server->timeout)) < 0) {
             perror("select failed");
             exit(EXIT_FAILURE);
         }
-        if (FD_ISSET(server->fd, &server->readfds)) {
+        if (FD_ISSET(server->frst_socket, &server->readfds)) {
             accept_connection(server);
-            after_connection(server);
+            add_to_socket_list(server);
         }
+        after_connection(server);
     }
-    close(server->fd);
     return 0;
 }

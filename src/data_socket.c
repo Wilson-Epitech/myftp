@@ -51,7 +51,6 @@ void data_socket_loop(server_t *server)
     create_data_socket(server);
     reply227(server);
     close(server->nw_socket);
-    // fork();
     if (listen(server->fd_data, 100) < 0) {
         perror("listen failed");
         exit(EXIT_FAILURE);

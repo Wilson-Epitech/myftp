@@ -8,7 +8,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "server.h"
+
+static int error_handling(server_t *server, int ac, char **av)
+{
+    if (ac != 3) {
+        printf("bad option, run ./myftp -help\n");
+        return FAILURE;
+    }
+    if (get_args(server, av) == 84)
+        return FAILURE;
+    if (chdir(server->path) != 0) {
+        printf("Directory doesn't exsist\n");
+        return FAILURE;
+    }
+    return SUCCESS;
+}
 
 int main(int ac, char **av)
 {
@@ -20,14 +36,10 @@ int main(int ac, char **av)
     memset(server, 0, sizeof(server_t));
     if (ac == 2 && strcmp(av[1], "-help") == 0) {
         printf("%s", usage);
-        return 0;
+        return SUCCESS;
     }
-    if (ac != 3) {
-        printf("bad option, run ./myftp -help\n");
-        return 84;
-    }
-    if (get_args(server, av) == 84)
-        return 84;
+    if (error_handling(server, ac, av) == 84)
+        return FAILURE;
     server_loop(server);
-    return 0;
+    return SUCCESS;
 }

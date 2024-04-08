@@ -6,31 +6,49 @@
 */
 
 #include <netinet/ip.h>
+#include <unistd.h>
 
 #ifndef SERVER_H_
     #define SERVER_H_
 
+static const int FAILURE = 84;
+static const int SUCCESS = 0;
+
 typedef struct server_s {
+    struct timeval timeout;
     struct sockaddr_in socket;
-    struct sockaddr_in dataSocket;
+    char *buffer;
+    int *client_socket;
     int port;
     char *path;
-    socklen_t socketlen;
-    char *buffer;
-    char *data_buffer;
-    int fd;
+    int opt;
+    int Anonymous_logged;
+    int try_logged;
+    int frst_socket;
+    int socketlen;
     int nw_socket;
-    int nw_data_socket;
-    int fd_data;
+    int max_clients;
+    int valread;
+    int sd;
+    int max_sd;
     fd_set readfds;
-    struct timeval timeout;
 } server_t;
 
 int server_loop(server_t *server);
 void init_sock_struct(server_t *server);
-int init_socket(int fd);
+int init_socket(int fd, int opt);
 void init_data_struct(server_t *server);
 int get_args(server_t *server, char **av);
 void data_socket_loop(server_t *server);
+char **my_word_array_delim(char const *str, char *separators);
+char **init_array_reply(char **array);
+char **init_array_commands(char **array);
+char *get_reply_code(char *str);
+void send_reply(int sd, char *reply_code);
+void process_socket(server_t *server);
+void reset_client_socket(server_t *server);
+void handle_client_socket(server_t *server);
+void add_to_socket_list(server_t *server);
+void init_server(server_t *server);
 
 #endif /* !SERVER_H_ */
