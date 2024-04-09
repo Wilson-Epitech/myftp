@@ -27,6 +27,8 @@ static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
         cli[i].anonymous_logged = 1;
         cli[i].other_user = 0;
     }
+    if (strcmp(array[0], "PASS") == 0 && (cli[i].anonymous_logged == 0 && cli[i].other_user == 0))
+        send_reply(server->sd, "503");
     if ((strcmp(array[0], "PASS") == 0)
         && cli[i].anonymous_logged == 1 && array[1] != NULL)
         send_reply(server->sd, "530");
@@ -43,11 +45,23 @@ static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
     char **array = my_word_array_delim(buffer, " ");
 
     commands = init_array_commands(commands);
-    if (array[1] == NULL && strcmp(array[0], "QUIT")
-        != 0 && strcmp(array[0], "PASS") != 0) {
-            return 1;
-    }
+    // if (array[1] == NULL && strcmp(array[0], "QUIT")
+    //     != 0 && strcmp(array[0], "PASS") != 0) {
+    //         return 1;
+    // }
+
+    //     if (array[1] == NULL && (strcmp(array[0], "QUIT")
+    //     != 0 && strcmp(array[0], "PASS") != 0 && strcmp(array[0], "USER") != 0)) {
+    //         send_reply(server->sd, "530");
+    //         return 0;
+    // }
     for (int j = 0; commands[j] != NULL; j++) {
+        if (strcmp(array[0], commands[j]) == 0
+        && (cli[i].anonymous_logged == 0 && cli[i].other_user == 0)
+        && strcmp(array[0], "USER") != 0 && strcmp(array[0], "PASS") != 0) {
+            send_reply(server->sd, "530");
+            return 0;
+        }
         if (strcmp(array[0], commands[j]) == 0) {
             get_user_command(server, cli, array, i);
             return 0;

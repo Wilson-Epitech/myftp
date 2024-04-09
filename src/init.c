@@ -11,7 +11,7 @@
 
 char **init_array_reply(char **array)
 {
-    array = malloc(sizeof(char *) * (14));
+    array = malloc(sizeof(char *) * (15));
     array[0] = "220 Service ready for new user.\n";
     array[1] = "230 User logged in, proceed.\n";
     array[2] = "331 User name okay, need password.\n";
@@ -24,9 +24,10 @@ char **init_array_reply(char **array)
     array[9] = "226 Closing data connection.\n";
     array[10] = "257 PATHNAME created.\n";
     array[11] = "214 Help message.\n";
-    array[12] = "500 Invalid command\n";
-    array[13] = "530 Authentication rejected. Login failed.\n";
-    array[14] = NULL;
+    array[12] = "500 Invalid command.\n";
+    array[13] = "503 Bad sequence of commands.\n";
+    array[14] = "530 Not logged in.\n";
+    array[15] = NULL;
     return array;
 }
 
