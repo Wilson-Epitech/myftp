@@ -39,21 +39,38 @@ typedef struct cli_s {
     int other_user;
 } cli_t;
 
+//--------main.c -----------------------//
+int get_args(server_t *server, char **av);
+
+//--------server.c -------------------------//
 int server_loop(server_t *server, cli_t *cli);
+
+//--------init.c ----------------------//
 void init_sock_struct(server_t *server);
 int init_socket(int fd, int opt);
 void init_data_struct(server_t *server);
-int get_args(server_t *server, char **av);
-void data_socket_loop(server_t *server);
-char **my_word_array_delim(char const *str, char *separators);
+void init_server(server_t *server);
 char **init_array_reply(char **array);
 char **init_array_commands(char **array);
+
+//--------get_reply_code.c -------------//
 char *get_reply_code(char *str);
 void send_reply(int sd, char *reply_code);
+
+//--------socket.c -----------------------//
+void handle_client_socket(server_t *server);
 void process_socket(server_t *server);
 void reset_client_socket(server_t *server);
-void handle_client_socket(server_t *server);
 void add_to_socket_list(server_t *server);
-void init_server(server_t *server);
+
+void data_socket_loop(server_t *server);
+
+//--------lib ----------------------------------------------//
+char **my_word_array_delim(char const *str, char *separators);
+
+//--------handle_input ---------------------------------------------------//
+void handle_quit_command(server_t *server, char **array, int i);
+void handle_user_command(server_t *server, cli_t *cli, char **array, int i);
+void handle_pass_command(server_t *server, cli_t *cli, char **array, int i);
 
 #endif /* !SERVER_H_ */

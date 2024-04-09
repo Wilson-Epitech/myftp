@@ -13,6 +13,9 @@ SRC	=	main.c							\
 		src/get_args.c					\
 		src/get_reply_code.c			\
 		src/socket.c					\
+		src/handle_input/handle_pass.c	\
+		src/handle_input/handle_quit.c	\
+		src/handle_input/handle_user.c	\
 		src/lib/my_word_array_delim.c 	\
 		# src/data_socket.c	\
 

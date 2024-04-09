@@ -13,32 +13,9 @@
 
 static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
 {
-    if (strcmp(array[0], "QUIT") == 0) {
-        close(server->sd);
-        server->client_socket[i] = 0;
-    }
-    if ((strcmp(array[0], "USER") == 0)) {
-        send_reply(server->sd, "331");
-        cli[i].other_user = 1;
-        cli[i].anonymous_logged = 0;
-    }
-    if ((strcmp(array[0], "USER") == 0)
-        && array[1] != NULL && (strcmp(array[1], "Anonymous") == 0)) {
-        cli[i].anonymous_logged = 1;
-        cli[i].other_user = 0;
-    }
-    if (strcmp(array[0], "PASS") == 0 && (cli[i].anonymous_logged == 0 && cli[i].other_user == 0))
-        send_reply(server->sd, "503");
-    if ((strcmp(array[0], "PASS") == 0)
-        && cli[i].anonymous_logged == 1 && array[1] != NULL)
-        send_reply(server->sd, "530");
-    if (strcmp(array[0], "PASS") == 0 && cli[i].other_user == 1) {
-        send_reply(server->sd, "530");
-        cli[i].other_user = 0;
-    }
-    if ((strcmp(array[0], "PASS") == 0)
-        && cli[i].anonymous_logged == 1 && array[1] == NULL)
-        send_reply(server->sd, "230");
+    handle_user_command(server, cli, array, i);
+    handle_pass_command(server, cli, array, i);
+    handle_quit_command(server, array, i);
 }
 
 static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
@@ -50,7 +27,8 @@ static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
     for (int j = 0; commands[j] != NULL; j++) {
         if (strcmp(array[0], commands[j]) == 0
         && (cli[i].anonymous_logged == 0 && cli[i].other_user == 0)
-        && strcmp(array[0], "USER") != 0 && strcmp(array[0], "PASS") != 0) {
+        && strcmp(array[0], "USER") != 0 && strcmp(array[0], "PASS") != 0
+        && strcmp(array[0], "QUIT") != 0) {
             send_reply(server->sd, "530");
             return 0;
         }
