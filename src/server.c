@@ -11,7 +11,7 @@
 #include <string.h>
 #include "server.h"
 
-static void get_user_command(server_t *server, char **array, int i)
+static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
 {
     if (strcmp(array[0], "QUIT") == 0) {
         close(server->sd);
@@ -21,16 +21,16 @@ static void get_user_command(server_t *server, char **array, int i)
         send_reply(server->sd, "331");
     if ((strcmp(array[0], "USER") == 0)
         && (strcmp(array[1], "Anonymous") == 0))
-        server->Anonymous_logged = 1;
+        cli[i].Anonymous_logged = 1;
     if ((strcmp(array[0], "PASS") == 0)
-        && server->Anonymous_logged == 1 && array[1] != NULL)
+        && cli[i].Anonymous_logged == 1 && array[1] != NULL)
         send_reply(server->sd, "530");
     if ((strcmp(array[0], "PASS") == 0)
-        && server->Anonymous_logged == 1 && array[1] == NULL)
+        &&     cli[i].Anonymous_logged == 1 && array[1] == NULL)
         send_reply(server->sd, "230");
 }
 
-static int check_user_command(server_t *server, char *buffer, int i)
+static int check_user_command(server_t *server,  cli_t *cli, char *buffer, int i)
 {
     char **commands = NULL;
     char **array = my_word_array_delim(buffer, " ");
@@ -42,14 +42,14 @@ static int check_user_command(server_t *server, char *buffer, int i)
     }
     for (int j = 0; commands[j] != NULL; j++) {
         if (strcmp(array[0], commands[j]) == 0) {
-            get_user_command(server, array, i);
+            get_user_command(server, cli, array, i);
             return 0;
         }
     }
     return 1;
 }
 
-static void check_state(server_t *server, int i)
+static void check_state(server_t *server,  cli_t *cli, int i)
 {
     int pos = 0;
     char *message = get_reply_code("500");
@@ -60,18 +60,18 @@ static void check_state(server_t *server, int i)
 		server->client_socket[i] = 0;
 	} else {
 	    server->buffer[server->valread - 2] = '\0';
-        pos = check_user_command(server, server->buffer, i);
+        pos = check_user_command(server, cli, server->buffer, i);
         if (pos == 1)
             send(server->sd, message, strlen(message), 0);
 	}
 }
 
-static void after_connection(server_t *server)
+static void after_connection(server_t *server,  cli_t *cli)
 {
     for (int i = 0; i < server->max_clients; i++) {
 		server->sd = server->client_socket[i];
 		if (FD_ISSET(server->sd, &server->readfds)) {
-			check_state(server, i);
+			check_state(server, cli, i);
 		}
 	}
 }
@@ -93,7 +93,7 @@ static void accept_connection(server_t *server)
     }
 }
 
-int server_loop(server_t *server)
+int server_loop(server_t *server, cli_t *cli)
 {
     init_server(server);
     process_socket(server);
@@ -111,7 +111,7 @@ int server_loop(server_t *server)
             accept_connection(server);
             add_to_socket_list(server);
         }
-        after_connection(server);
+        after_connection(server, cli);
     }
     return 0;
 }

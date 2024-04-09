@@ -22,11 +22,11 @@ typedef struct server_s {
     int port;
     char *path;
     int opt;
-    int Anonymous_logged;
     int try_logged;
     int frst_socket;
     int socketlen;
     int nw_socket;
+    int Anonymous_logged;
     int max_clients;
     int valread;
     int sd;
@@ -34,7 +34,11 @@ typedef struct server_s {
     fd_set readfds;
 } server_t;
 
-int server_loop(server_t *server);
+typedef struct cli_s {
+    int Anonymous_logged;
+} cli_t;
+
+int server_loop(server_t *server, cli_t *cli);
 void init_sock_struct(server_t *server);
 int init_socket(int fd, int opt);
 void init_data_struct(server_t *server);
