@@ -35,7 +35,8 @@ typedef struct server_s {
 } server_t;
 
 typedef struct cli_s {
-    int Anonymous_logged;
+    int anonymous_logged;
+    int other_user;
 } cli_t;
 
 int server_loop(server_t *server, cli_t *cli);
