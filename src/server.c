@@ -11,7 +11,7 @@
 #include <string.h>
 #include "server.h"
 
-static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
+static void handle_command(server_t *server, cli_t *cli, char **array, int i)
 {
     handle_user_command(server, cli, array, i);
     handle_pass_command(server, cli, array, i);
@@ -33,7 +33,7 @@ static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
             return 0;
         }
         if (strcmp(array[0], commands[j]) == 0) {
-            get_user_command(server, cli, array, i);
+            handle_command(server, cli, array, i);
             return 0;
         }
     }
