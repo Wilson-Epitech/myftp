@@ -27,5 +27,5 @@ void send_reply(int sd, char *reply_code)
 {
     char *message = get_reply_code(reply_code);
 
-    send(sd, message, strlen(message), 0);
+    write(sd, message, strlen(message));
 }

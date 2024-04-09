@@ -30,7 +30,6 @@ int main(int ac, char **av)
 {
     server_t *server = malloc(sizeof(server_t));
     cli_t *cli = malloc(sizeof(cli_t) * (30));
-
     const char *usage = "USAGE: ./myftp port path\n"
         "port is the port number on which the server socket listens\n"
         "path is the path to the home directory for the Anonymous user\n";

@@ -31,7 +31,7 @@ static void reply227(server_t *server)
     }
     sprintf(answer, "%s (%d,%d,%d,%d,%d,%d)\n", str, ip[0], ip[1], ip[2],
         ip[3], port / 256, port % 256);
-    send(server->nw_socket, answer, strlen(answer), 0);
+    write(server->nw_socket, answer, strlen(answer));
     free(answer);
 }
 

@@ -15,7 +15,7 @@ static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
 {
     if (strcmp(array[0], "QUIT") == 0) {
         close(server->sd);
-		server->client_socket[i] = 0;
+        server->client_socket[i] = 0;
     }
     if ((strcmp(array[0], "USER") == 0))
         send_reply(server->sd, "331");
@@ -26,11 +26,11 @@ static void get_user_command(server_t *server, cli_t *cli, char **array, int i)
         && cli[i].Anonymous_logged == 1 && array[1] != NULL)
         send_reply(server->sd, "530");
     if ((strcmp(array[0], "PASS") == 0)
-        &&     cli[i].Anonymous_logged == 1 && array[1] == NULL)
+        && cli[i].Anonymous_logged == 1 && array[1] == NULL)
         send_reply(server->sd, "230");
 }
 
-static int check_user_command(server_t *server,  cli_t *cli, char *buffer, int i)
+static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
 {
     char **commands = NULL;
     char **array = my_word_array_delim(buffer, " ");
@@ -49,31 +49,31 @@ static int check_user_command(server_t *server,  cli_t *cli, char *buffer, int i
     return 1;
 }
 
-static void check_state(server_t *server,  cli_t *cli, int i)
+static void check_state(server_t *server, cli_t *cli, int i)
 {
     int pos = 0;
     char *message = get_reply_code("500");
 
     server->valread = read(server->sd, server->buffer, 4096);
     if (server->valread == 0) {
-		close(server->sd);
-		server->client_socket[i] = 0;
-	} else {
-	    server->buffer[server->valread - 2] = '\0';
-        pos = check_user_command(server, cli, server->buffer, i);
+        close(server->sd);
+        server->client_socket[i] = 0;
+    } else {
+        server->buffer[server->valread - 2] = '\0';
+        pos = check_usr_command(server, cli, server->buffer, i);
         if (pos == 1)
-            send(server->sd, message, strlen(message), 0);
-	}
+            write(server->sd, message, strlen(message));
+    }
 }
 
-static void after_connection(server_t *server,  cli_t *cli)
+static void after_connection(server_t *server, cli_t *cli)
 {
     for (int i = 0; i < server->max_clients; i++) {
-		server->sd = server->client_socket[i];
-		if (FD_ISSET(server->sd, &server->readfds)) {
-			check_state(server, cli, i);
-		}
-	}
+        server->sd = server->client_socket[i];
+        if (FD_ISSET(server->sd, &server->readfds)) {
+            check_state(server, cli, i);
+        }
+    }
 }
 
 static void accept_connection(server_t *server)
@@ -81,14 +81,14 @@ static void accept_connection(server_t *server)
     char *message = get_reply_code("220");
 
     server->nw_socket = accept(server->frst_socket,
-	    (struct sockaddr *)&server->socket, (socklen_t *)&server->socketlen);
+        (struct sockaddr *)&server->socket, (socklen_t *)&server->socketlen);
     if (server->nw_socket < 0) {
         perror("accept failed");
         exit(EXIT_FAILURE);
     }
-    if (send(server->nw_socket, message,
-        strlen(message), 0) != strlen(message)) {
-	    perror("send failed");
+    if (write(server->nw_socket, message,
+        strlen(message)) != strlen(message)) {
+        perror("write failed");
         exit(EXIT_FAILURE);
     }
 }
