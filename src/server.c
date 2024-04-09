@@ -87,7 +87,7 @@ static void accept_connection(server_t *server)
         exit(EXIT_FAILURE);
     }
     if (write(server->nw_socket, message,
-        strlen(message)) != strlen(message)) {
+        strlen(message)) != (unsigned)strlen(message)) {
         perror("write failed");
         exit(EXIT_FAILURE);
     }
