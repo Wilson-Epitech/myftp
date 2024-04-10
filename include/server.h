@@ -72,5 +72,6 @@ char **my_word_array_delim(char const *str, char *separators);
 void handle_quit_command(server_t *server, char **array, int i);
 void handle_user_command(server_t *server, cli_t *cli, char **array, int i);
 void handle_pass_command(server_t *server, cli_t *cli, char **array, int i);
+void handle_help_command(server_t *server, char **array);
 
 #endif /* !SERVER_H_ */
