@@ -27,6 +27,8 @@ static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
 
     commands = init_array_commands(commands);
     for (int j = 0; commands[j] != NULL; j++) {
+        if (array[0] == NULL)
+            return 0;
         if (strcmp(array[0], commands[j]) == 0
         && (cli[i].anonymous_logged == 0 && cli[i].other_user == 0)
         && strcmp(array[0], "USER") != 0 && strcmp(array[0], "PASS") != 0
