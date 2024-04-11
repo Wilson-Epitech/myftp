@@ -56,7 +56,6 @@ static void check_state(server_t *server, cli_t *cli, int i)
         server->client_socket[i] = 0;
     } else {
         server->buffer[server->valread - 2] = '\0';
-        cli[i].working_dir = strdup(server->path);
         pos = check_usr_command(server, cli, server->buffer, i);
         if (pos == 1)
             write(server->sd, message, strlen(message));
@@ -90,9 +89,19 @@ static void accept_connection(server_t *server)
     }
 }
 
+static void init_cli(cli_t *cli)
+{
+    for (int i = 0; i < 30; i++) {
+        cli[i].working_dir = getcwd(NULL, 0);
+        cli[i].anonymous_logged = 0;
+        cli[i].other_user = 0;
+    }
+}
+
 int server_loop(server_t *server, cli_t *cli)
 {
     init_server(server);
+    init_cli(cli);
     process_socket(server);
     while (1) {
         FD_ZERO(&server->readfds);
