@@ -51,7 +51,16 @@ static void backward_path(server_t *server, cli_t *cli, int value, int i)
     send_reply(server->sd, "250");
 }
 
-void handle_cwd_command(server_t *server, cli_t *cli, char **array, int i)
+static void handle_cdup_command(server_t *server,
+    cli_t *cli, char **array, int i)
+{
+    if (strcmp(array[0], "CDUP") == 0) {
+        backward_path(server, cli, 1, i);
+    }
+}
+
+static void handle_cwd_command(server_t *server,
+    cli_t *cli, char **array, int i)
 {
     int tmp = 0;
 
@@ -73,4 +82,10 @@ void handle_cwd_command(server_t *server, cli_t *cli, char **array, int i)
             send_reply(server->sd, "250");
         }
     }
+}
+
+void handle_cwd_cdup_command(server_t *server, cli_t *cli, char **array, int i)
+{
+    handle_cwd_command(server, cli, array, i);
+    handle_cdup_command(server, cli, array, i);
 }

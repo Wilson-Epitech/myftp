@@ -18,7 +18,7 @@ static void handle_command(server_t *server, cli_t *cli, char **array, int i)
     handle_quit_command(server, array, i);
     handle_help_command(server, array);
     handle_noop_command(server, array);
-    handle_cwd_command(server, cli, array, i);
+    handle_cwd_cdup_command(server, cli, array, i);
 }
 
 static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)

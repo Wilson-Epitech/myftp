@@ -7,19 +7,19 @@
 
 CC ?= gcc
 
-SRC	=	main.c							\
-		src/init.c						\
-		src/server.c 					\
-		src/get_args.c					\
-		src/get_reply_code.c			\
-		src/socket.c					\
-		src/handle_input/handle_pass.c	\
-		src/handle_input/handle_quit.c	\
-		src/handle_input/handle_user.c	\
-		src/handle_input/handle_help.c	\
-		src/handle_input/handle_noop.c	\
-		src/handle_input/handle_cwd.c	\
-		src/lib/my_word_array_delim.c 	\
+SRC	=	main.c								\
+		src/init.c							\
+		src/server.c 						\
+		src/get_args.c						\
+		src/get_reply_code.c				\
+		src/socket.c						\
+		src/handle_input/handle_pass.c		\
+		src/handle_input/handle_quit.c		\
+		src/handle_input/handle_user.c		\
+		src/handle_input/handle_help.c		\
+		src/handle_input/handle_noop.c		\
+		src/handle_input/handle_cwd_cdup.c	\
+		src/lib/my_word_array_delim.c 		\
 		# src/data_socket.c	\
 
 OBJ	=	$(SRC:.c=.o)

@@ -75,6 +75,7 @@ void handle_user_command(server_t *server, cli_t *cli, char **array, int i);
 void handle_pass_command(server_t *server, cli_t *cli, char **array, int i);
 void handle_help_command(server_t *server, char **array);
 void handle_noop_command(server_t *server, char **array);
-void handle_cwd_command(server_t *server, cli_t *cli, char **array, int i);
+void handle_cwd_cdup_command(server_t *server,
+    cli_t *cli, char **array, int i);
 
 #endif /* !SERVER_H_ */
