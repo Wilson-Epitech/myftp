@@ -15,8 +15,9 @@ static int is_dir(const char *filename)
 {
     struct stat path;
 
-    stat(filename, &path);
-    return S_ISDIR(path.st_mode);
+    if (stat(filename, &path) == 0 && S_ISDIR(path.st_mode))
+        return 1;
+    return 0;
 }
 
 static char *update_path(char *current_path, char *dirname)
@@ -63,13 +64,15 @@ static void handle_cwd_command(server_t *server,
     cli_t *cli, char **array, int i)
 {
     int tmp = 0;
+    char *next_dir = NULL;
 
     if (strcmp(array[0], "CWD") == 0 && array[1] == NULL) {
         send_reply(server->sd, "550");
         return;
     }
     if (strcmp(array[0], "CWD") == 0 && array[1] != NULL) {
-        tmp = is_dir(array[1]);
+        next_dir = update_path(cli[i].working_dir, array[1]);
+        tmp = is_dir(next_dir);
         if (strncmp(array[1], "../", 3) == 0) {
             backward_path(server, cli, count_backward(array[1]), i);
             return;
