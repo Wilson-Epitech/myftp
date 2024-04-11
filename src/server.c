@@ -18,6 +18,7 @@ static void handle_command(server_t *server, cli_t *cli, char **array, int i)
     handle_quit_command(server, array, i);
     handle_help_command(server, array);
     handle_noop_command(server, array);
+    handle_cwd_command(server, cli, array, i);
 }
 
 static int check_usr_command(server_t *server, cli_t *cli, char *buffer, int i)
@@ -55,6 +56,7 @@ static void check_state(server_t *server, cli_t *cli, int i)
         server->client_socket[i] = 0;
     } else {
         server->buffer[server->valread - 2] = '\0';
+        cli[i].working_dir = strdup(server->path);
         pos = check_usr_command(server, cli, server->buffer, i);
         if (pos == 1)
             write(server->sd, message, strlen(message));
