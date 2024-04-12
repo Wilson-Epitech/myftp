@@ -27,7 +27,7 @@ char **init_array_reply(char **array)
     array[12] = "500 Invalid command.\n";
     array[13] = "503 Bad sequence of commands.\n";
     array[14] = "530 Not logged in.\n";
-    array[15] = "550 Requested action not taken. File unavailable (e.g., file not found, no access).\n";
+    array[15] = "550 Requested action not taken.\n";
     array[16] = NULL;
     return array;
 }
