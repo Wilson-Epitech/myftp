@@ -19,6 +19,7 @@ SRC	=	main.c								\
 		src/handle_input/handle_help.c		\
 		src/handle_input/handle_noop.c		\
 		src/handle_input/handle_cwd_cdup.c	\
+		src/handle_input/handle_list.c		\
 		src/lib/my_word_array_delim.c 		\
 		# src/data_socket.c	\
 

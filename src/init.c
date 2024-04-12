@@ -11,7 +11,7 @@
 
 char **init_array_reply(char **array)
 {
-    array = malloc(sizeof(char *) * (16));
+    array = malloc(sizeof(char *) * (17));
     array[8] = "150 File status okay; about to open data connection.\n";
     array[5] = "200 Command okay.\n";
     array[11] = "214 Help message.\n";
@@ -28,7 +28,8 @@ char **init_array_reply(char **array)
     array[13] = "503 Bad sequence of commands.\n";
     array[14] = "530 Not logged in.\n";
     array[15] = "550 Requested action not taken.\n";
-    array[16] = NULL;
+    array[16] = "425 Can't open data connection.\n";
+    array[17] = NULL;
     return array;
 }
 
