@@ -52,24 +52,12 @@ static void backward_path(server_t *server, cli_t *cli, int value, int i)
     send_reply(server->sd, "250");
 }
 
-static void handle_cdup_command(server_t *server,
-    cli_t *cli, char **array, int i)
-{
-    if (strcmp(array[0], "CDUP") == 0) {
-        backward_path(server, cli, 1, i);
-    }
-}
-
 static void handle_cwd_command(server_t *server,
     cli_t *cli, char **array, int i)
 {
     int tmp = 0;
     char *next_dir = NULL;
 
-    if (strcmp(array[0], "CWD") == 0 && array[1] == NULL) {
-        send_reply(server->sd, "550");
-        return;
-    }
     if (strcmp(array[0], "CWD") == 0 && array[1] != NULL) {
         next_dir = update_path(cli[i].working_dir, array[1]);
         tmp = is_dir(next_dir);
@@ -89,6 +77,12 @@ static void handle_cwd_command(server_t *server,
 
 void handle_cwd_cdup_command(server_t *server, cli_t *cli, char **array, int i)
 {
+    if (strcmp(array[0], "CWD") == 0 && array[1] == NULL) {
+        send_reply(server->sd, "550");
+        return;
+    }
     handle_cwd_command(server, cli, array, i);
-    handle_cdup_command(server, cli, array, i);
+    if (strcmp(array[0], "CDUP") == 0) {
+        backward_path(server, cli, 1, i);
+    }
 }
