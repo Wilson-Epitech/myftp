@@ -50,14 +50,15 @@ static void check_state(server_t *server, cli_t *cli, int i)
 {
     int pos = 0;
     char *message = get_reply_code("500");
+    char buffer[1024] = {0};
 
-    server->valread = read(server->sd, server->buffer, 4096);
-    if (server->valread == 0) {
+    read(server->sd, buffer, sizeof(buffer) - 1);
+    if (strlen(buffer) == 0) {
         close(server->sd);
         server->client_socket[i] = 0;
     } else {
-        server->buffer[server->valread - 2] = '\0';
-        pos = check_usr_command(server, cli, server->buffer, i);
+        buffer[strlen(buffer) - 2] = '\0';
+        pos = check_usr_command(server, cli, buffer, i);
         if (pos == 1)
             write(server->sd, message, strlen(message));
     }
