@@ -11,7 +11,7 @@
 
 char **init_array_reply(char **array)
 {
-    array = malloc(sizeof(char *) * (17));
+    array = malloc(sizeof(char *) * (18));
     array[8] = "150 File status okay; about to open data connection.\n";
     array[5] = "200 Command okay.\n";
     array[11] = "214 Help message.\n";
@@ -35,7 +35,7 @@ char **init_array_reply(char **array)
 
 char **init_array_commands(char **array)
 {
-    array = malloc(sizeof(char *) * (14));
+    array = malloc(sizeof(char *) * (15));
     array[0] = "USER";
     array[1] = "PASS";
     array[2] = "CWD";
