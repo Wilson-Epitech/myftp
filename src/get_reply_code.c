@@ -5,8 +5,10 @@
 ** reply_code
 */
 
-#include "server.h"
 #include <string.h>
+#include <stdio.h>
+
+#include "server.h"
 
 char *get_reply_code(char *str)
 {
@@ -27,5 +29,5 @@ void send_reply(int sd, char *reply_code)
 {
     char *message = get_reply_code(reply_code);
 
-    write(sd, message, strlen(message));
+    dprintf(sd, "%s", message);
 }
