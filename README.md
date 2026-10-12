@@ -14,7 +14,7 @@
 
 <p align="center"><img src=".github/assets/term-myftp.png" alt="myFTP" width="820"/></p>
 
-## En deux mots
+## Le projet en quelques mots
 
 Un serveur FTP qui suit la **RFC 959** pour la partie commandes : connexion, authentification, navigation dans les dossiers. Tous les clients sont gérés dans un seul processus grâce à `select`.
 
@@ -26,10 +26,6 @@ Un serveur FTP qui suit la **RFC 959** pour la partie commandes : connexion, aut
 - `NOOP`, `HELP`, `QUIT`
 - Codes de réponse conformes à la RFC (`220`, `331`, `230`, `257`, `530`…)
 - Le canal de données (`PASV`, `PORT`, `RETR`, `STOR`, `LIST`) est commencé mais pas terminé
-
-## Sous le capot
-
-Un socket d'écoute et un tableau de clients. À chaque tour de `select`, on accepte les nouvelles connexions et on lit les sockets prêts. Chaque client garde son état (utilisateur, authentifié ou non, dossier courant), et les commandes sont aiguillées vers leur handler.
 
 ## Lancer le projet
 
