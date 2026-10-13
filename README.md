@@ -32,5 +32,5 @@ Un serveur FTP qui suit la **RFC 959** pour la partie commandes : connexion, aut
 ```bash
 make
 ./myftp 2121 /chemin/du/dossier
-nc localhost 2121    # puis : USER Anonymous, PASS, PWD, CWD …
+nc localhost 2121
 ```
